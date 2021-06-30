@@ -21,8 +21,10 @@
 
 <style>
    .east-back li{
-        border: solid 2px #F5F5DC
+        border: solid 1px
     }
+
+	 #3listmenu .selected{font-weight:bold; background: #ff99cc; color:#fff;}
 </style>
 
 
@@ -228,8 +230,8 @@
       <ui-layout options="{ flow : 'column' }">
         <!---leftlist--->
         <sidebar class="east-back left-back">
-          <ul class="nav nav-pills nav-stacked">
-              <li class="active"><a href="#">订单列表</a></li>
+          <ul id="listmenu" class="nav nav-pills nav-stacked">
+              <li id="rootlist" class="active"><a href="#">订单列表</a></li>
               <li><a href="javascript:click()"><span>ODER2016043043</span></br><span>海信据-刘先生</span></a></li>
               <li><a href="#"><span>ODER2016043043</span></br><span>广州碧桂园-刘先生</span></a></li>
               <li><a href="#"><span>ODER2016043043</span></br><span>海信据-刘先生</span></a></li>
@@ -246,12 +248,9 @@
           <div class="info-center">
             <div class="page-header">
               <div class="pull-left">
-		            <h4>订单管理</h4>
+		            <h4>订单信息</h4>
 	           </div>
-            <div class="pull-right">
-                <button type="button" class="btn btn-mystyle btn-sm">搜索</button>
-                 <button type="button" class="btn btn-mystyle btn-sm">返回</button>
-            </div>
+             
           </div>
 				    <div class="search-box row">
                        <div class="col-md-8">
@@ -259,7 +258,7 @@
                         </div>
                         <div class="col-md-4">
                          <div class="btn-group pull-right" role="group" aria-label="...">
-                          <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> 新增</button>
+                          <button id="submit" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" ></span> 新增</button>
                            <div class="btn-group" role="group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               <span class="glyphicon glyphicon-edit"></span> 审核
@@ -278,32 +277,13 @@
                     </div>
                     <div class="clearfix"></div>
                       <div class="table-margin" >
-                      <table class="table table-bordered table-header" >
-                        <thead>
-                         <tr>
-
-                           <td class="w10">订单号</td>
-                           <td class="w10">合同号</td>
-                           <td class="w10">订单状态</td>
-                             <td class="w10">客户名称</td>
-                             <td class="w10">客户地址</td>
-                             <td class="w10">外派公司</td>
-                             <td class="w10">交货时间</td>
-                             <td class="w10">类型</td>
-
-                         </tr>
-                         </thead>
-                         <tbody id="maincontext">
-                         <tr>
-                            <td>CCRERER4343</td> <td>YY5545454</td> <td>待派工</td> <td>北京药业</td> <td>防腐剂的数据放到</td> <td>货拉拉共公司</td> <td>2026-05-06</td> <td>2</td>
-
-                         </tr>
-                         </tbody>
-                      </table>
+                         
+                          <iframe src="main.html" ref="h5CourseWare" height="350px"   width="100%" frameborder="0"  scrolling="0" ></iframe> 
+                               
                       </div>
 
                      <div class="table-margin">
-                          <span>附件</span>
+                          <h2 data-i18n-text="deviceBasicInfo"><span id="deviceStatus" style="display: none !important;"><span style="width: 60px;display: inline-block;padding: 0 6px;border-radius: 2px;min-width: 110px;text-align: center;color: #f5f5f5;line-height: 20px;position: absolute;left: 160px;top: 10px;background: #3ecba6">idle</span></span>附件</h2>
                           <table class="table table-bordered table-header" id="attach">
                               <thead>
                                  <tr><td><input type="checkbox" /></td><td class="w25">文件名称</td><td class="w25">文件类型</td><td class="w25">文件大小</td><td class="w10">操作</td></tr>
@@ -332,6 +312,7 @@
 
 
 <script type="text/javascript">
+ 
 /*Angular-UI-layout*/
 angular.module('doc.ui-layout', ['ui.layout']);
 
@@ -403,9 +384,31 @@ $(".left-main .sidebar-fold").click(function(){
 })
 
 
-function click(e){
-    console.log(JSON.stringify(e));
+function click(){
+    console.log("good");
+
+var param={username:'jick',address:'中国发动机是否觉得',orderNo:'Y44020343'}
+// 原生
+//<iframe src="iframeSrc" frameborder="0" width="100%" height="100%"></iframe>
+document.querySelector('iframe').contentWindow.postMessage(param,'*');
+
+// vue
+//<iframe ref="h5CourseWare" :src="iframeSrc" frameborder="0" width="100%" height="100%"></iframe>
+//this.$refs.h5CourseWare.contentWindow.postMessage('向iframe传的值'， '*')
+
+	 
 }
+ 
+ $("#submit").on("click",click);
+
+
+ $("#listmenu li").click(function(e) {
+        $(this).siblings('li').removeClass('active');  // 删除其他兄弟元素的样式
+        $(this).addClass('active');   
+		
+		// 添加当前元素的样式
+    });
+
 </script>
 </body>
 </html>
