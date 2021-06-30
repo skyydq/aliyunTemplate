@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+<title>消息中心</title>
+   
+  <link rel="stylesheet" href="layui.css?v=2021-05-18T01:24:27Z">
+  <link rel="stylesheet" href="font-awesome.min.css?v=2021-05-18T01:24:27Z">
+  <link rel="stylesheet" href="default2.css?v=2021-05-18T01:24:27Z">
+  <link rel="stylesheet" href="index.css?v=2021-05-18T01:24:27Z">
+    <script src="script/jquery-1.11.1.min.js" type="text/javascript"></script>
+</head>
+
+<body>
+ <div class="device-details-main sde-form i18n-zh">
+<h2 data-i18n-text="deviceBasicInfo"><span id="deviceStatus" style="display: none !important;"><span style="width: 60px;display: inline-block;padding: 0 6px;border-radius: 2px;min-width: 110px;text-align: center;color: #f5f5f5;line-height: 30px;position: absolute;left: 160px;top: 10px;background: #3ecba6">idle</span></span>订单基本信息</h2>
+<dl class="four bg" style="position:relative">
+  <dt class="i18n-zh"><span data-i18n-text="name">订单号</span></dt><dd style="position: relative">
+       <div class="doubleRow" id="orderNo" title="LCM动态验证环境4">LCM动态验证环境4</div>
+  <dt class="i18n-zh"><span data-i18n-text="productGroupName">合同号</span></dt>
+       <dd id="18b023cd3dbd4899ada2f2dc23f9bece" class="ellipsis" title="LCM_test">LCM_test</dd>
+  <dt class="i18n-zh"><span data-i18n-text="category">客户姓名</span></dt>
+       <dd id="device-details-category" class="ellipsis" title="Server">Server</dd>
+  <dt class="i18n-zh"><span data-i18n-text="type">客户地址</span></dt>
+       <dd  class="ellipsis" id="address">ATAE</dd>
+</dl>
+<dl class="four bg">
+	<dt class="i18n-zh"><span data-i18n-text="assetID">资产ID</span></dt><dd id="device-details-asset-id" class="ellipsis" title=""></dd>
+  <dt class="i18n-zh"><span data-i18n-text="lab">实验室</span></dt><dd id="device-details-lab" title="LCM运维实验室">LCM运维实验室</dd>
+  <dt class="i18n-zh"><span data-i18n-text="electronicLabel">公司条码</span></dt><dd id="device-details-electronic" class="ellipsis" title=""></dd>
+  <dt class="i18n-zh"><span data-i18n-text="department">部门</span></dt><dd><div class="doubleRow" id="device-details-department" rel="023338" title="/华为技术/2012实验室/">/华为技术/2012实验室/</div></dd>
+</dl>
+<dl class="four bg">
+	<dt class="i18n-zh"><span data-i18n-text="location">位置</span></dt><dd><div class="doubleRow" id="device-details-location" title="fff">fff</div></dd>
+  <dt class="i18n-zh"><span data-i18n-text="deviceGroup">分组</span></dt><dd id="device-details-group" class="ellipsis" title=""></dd>
+  <dt>IP</dt><dd id="device-details-ip"></dd>
+  <dt class="i18n-zh"><span data-i18n-text="version">版本</span></dt><dd id="device-details-version" class="ellipsis" title=""></dd>
+</dl>
+<dl class="four bg">
+  <dt class="i18n-zh"><span data-i18n-text="account">账号</span></dt><dd><input id="device-details-account" readonly="" class="ellipsis" oninput="commonContentLength(this, 30)" title=""></dd>
+  <dt class="i18n-zh"><span data-i18n-text="password">密码</span></dt><dd><input id="device-details-password" readonly="" autocomplete="off" class="ellipsis" oninput="commonContentLength(this, 40)" title=""></dd>
+  <dt class="i18n-zh"><span data-i18n-text="hardwareStatus">硬件状态</span></dt><dd id="device-details-hardware-status">正常</dd>
+  <dt class="i18n-zh"><span data-i18n-text="role">角色</span></dt><dd id="device-details-role">被测设备</dd>
+</dl>
+
+</div>
+
+<script>
+window.addEventListener('message',  (e) => {
+
+	 console.log("sub222..  "+JSON.stringify(e.data));
+	 console.log("fff  "+e.data.address);
+	 $("#orderNo").text(e.data.orderNo);
+	  $("#address").html(e.data.address);
+   // document.getElementById("address").innerText=e.data.address;
+    //document.getElementById("address").innerHTML=e.data.address;
+});
+</script>
+</body>
+</html>
