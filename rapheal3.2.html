@@ -1,0 +1,456 @@
+<html>
+<head>
+    <title>raphael流程图-http://my.oschina.net/lichaoqiang/</title>
+    <script src="jquery-3.5.0.min.js"></script>
+    <script src="raphael.js"></script>
+    <script src="jquery.contextMenu.js"></script>
+    <link rel="stylesheet" href="jquery.contextMenu.css?v=2021-05-18T01:24:27Z">
+
+    <style type="text/css">
+        html, fieldet, legend, div, span, a, form, body{ margin: 0;padding: 0;  }
+        body{ font-size:12px;}
+        #holder{top: 100px;left: 0px;right: 0px;bottom: 0px; position: absolute;z-index: 999;height: auto;}
+        .item{
+            position: absolute; top: 0px; z-index: 0; padding: 0px;margin:0px; height: 100px; width: 150px; float: left;background:#FFF8DC
+        }
+        #div div{ padding: 0px;
+            width: 400px;
+            height: 100px;margin:0px;
+            background-color: yellow;
+            color: white;
+            font-size: 30px;
+            float: left
+
+        }
+
+        h2 {
+            margin: 100px auto;
+            width: 500px;
+            padding: 10px;
+            font-size: 30px;
+            letter-spacing: 10px;
+            color: #FFFFFF;
+            text-align: center;
+            border-top: 1px solid #d56f22;
+            border-bottom: 3px solid #d56f22;
+            border-radius: 10px;
+        }
+
+        .contextmenu {
+            display: none;
+            position: absolute;
+            width: 70px;
+            background: #F0F8FF;
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 99;
+        }
+
+        .contextmenu li {
+            border-left: 1px solid transparent;
+            transition: ease 0.3s;
+        }
+
+        .contextmenu li:hover {
+            background: #CE93D8;
+            border-left: 3px solid #9C27B0;
+        }
+
+        .contextmenu li a {
+            display: block;
+            padding: 1px;
+            color: #000000;
+            text-decoration: none;
+            transition: ease 0.3s;
+        }
+
+        .contextmenu li:hover a {
+            color: #FF0000;
+        }
+    </style>
+</head>
+<body >
+
+<ul class="contextmenu" z-index="9999">
+    <li>
+        <a href="">百度</a>
+    </li>
+    <li>
+        <a href="#">搜狐</a>
+    </li>
+    <li>
+        <a href="#">搜狗</a>
+    </li>
+    <li>
+        <a href="#">必应</a>
+    </li>
+    <li>
+        <a href="#">网易</a>
+    </li>
+</ul>
+
+
+<div id="holder"></div>
+
+<div id="item1" class="item" data-item='{"nodeId":"1","nextNode":"2","title":"请假申请s"}' title="请假申请">
+    <div class="div" style="margin:0 auto;text-align:center; padding: 0px;height:20%;">财务管理</div>
+    <div id="context1" class="div" style="background:black;height:80%; padding: 0px;margin:0px;background-color: #6495ED;">总经理</div>
+</div>
+
+<div id="item2" class="item" data-item='{"nodeId":"2","nextNode":"3"}' title="开始审批">
+    <div class="div" style="margin:0 auto;text-align:center; padding: 0px;height:20%;">分公司</div>
+    <div class="div" style="background:black;height:80%; padding: 0px;margin:0px;background-color: #6495ED;">共享</div>
+</div>
+
+<div id="item3" class="item" data-item='{"nodeId":"3","nextNode":"4"}' title="部门审批">
+    <div id="title3" class="div" style="margin:0 auto;text-align:center; padding: 0px;height:20%;">物流</div>
+    <div class="div" style="background:black;height:80%; padding: 0px;margin:0px;background-color: #6495ED;">总经理2</div>
+</div>
+<div id="item4" class="item" data-item='{"nodeId":"4","nextNode":"5"}' title="单位审批">
+    <div class="div" style="margin:0 auto;text-align:center; padding: 0px;height:20%;">老板</div>
+    <div class="div" style="background:black;height:80%; padding: 0px;margin:0px;background-color: yellow;">总经理3</div>
+</div>
+<div id="item5" class="item" data-item='{"nodeId":"5","nextNode":""}' title="领导批示" onmouseover="this.style.cursor = 'hand'"  onmouseout="this.style.cursor='normal'">
+    <div class="div" style="margin:0 auto;text-align:center; padding: 0px;height:20%;">业务管理</div>
+    <div class="div" style="background:black;height:80%; padding: 0px;margin:0px;background-color: #6495ED;">总经理4</div>
+</div>
+<script type="text/javascript">
+    document.oncontextmenu = function(){return false;};
+
+
+   // document.onmousedown = function(event,s){
+   //      console.log("event "+JSON.stringify(this));
+   //      if(event.button == 2){
+   //          //alert("当前页面不能使用右键！");
+   //          return false;
+   //      }
+   //  }
+
+    var context=function(x){
+        alert("okssss");
+    }
+    var divnum=0;
+    var connections = [];
+    //拖动节点开始时的事件
+    var dragger = function () {
+        this.ox = this.attr("x");
+        this.oy = this.attr("y");
+        this.animate({ "fill-opacity": 0.2 }, 500);
+    };
+    //拖动事件
+    var move = function (dx, dy) {
+        var att = { x: this.ox + dx, y: this.oy + dy };
+        this.attr(att);
+        $("#item" + this.id).offset({ top: this.oy + dy + 100, left: this.ox + dx + 1 });
+        for (var i = connections.length; i--;) {
+            console.log("move"); r.drawArr(connections[i]); // 拖动时  重新绘制 链接线
+        }
+    };
+
+    //拖动结束后的事件
+    var up = function () { this.animate({ "fill-opacity": 0 }, 500); };
+    //创建绘图对象
+    var r = Raphael("holder", $(window).width(), $(window).height());
+    //定义元素坐标高宽
+    var $nodeList = $(".item"); //节点集合jquery对象
+    var _x, _y, _w, _h, shapeLen;
+    shapeLen = $nodeList.length; //节点数量
+    _x = 190; _y = 100; _h = 360; _w = 340;
+    var shapes = []; //节点集合
+
+    function initdiv(item,index){
+       // console.log("bbbbbbbbb "+item+" .. index "+index);
+        _w = $(item).width(); //元素的宽
+        _h = $(item).height(); //元素的高
+        console.log("initdiv _w  "+_w);
+        //var r_y = (_h + 100) * index + 20;
+        var r_x=(_x + 1) * index + 20;
+        //节点json数据
+        var data_item = $.parseJSON($(item).attr("data-item"));
+
+        console.log("nodeid........ "+data_item.nodeId);
+        shapes[data_item.nodeId] = r.rect(r_x, _y, _w, _h+2, 4);
+        $(item).offset({ top: _y + 100, left: r_x + 1 });
+
+        //为节点添加样式和事件，并且绘制节点之间的箭头
+        var color = Raphael.getColor();
+        shapes[data_item.nodeId].attr({ fill: color, stroke: color, "fill-opacity": 0, "stroke-width": 2, cursor: "move" });
+        shapes[data_item.nodeId].id = index + 1;
+        shapes[data_item.nodeId].drag(move, dragger, up); //拖动节点事件
+        shapes[data_item.nodeId].dblclick(function () { alert(this.id+" ;  "+item.title) }); //绑定双击节点事件
+        //shapes[data_item.nodeId].attr("title", item.title);
+        shapes[data_item.nodeId].attr("title", "mytitle");
+
+
+
+
+
+       // item.innerHTML = data_item.nodeId + item.innerHTML;
+
+        //绘制线条
+        var data_item = $.parseJSON($(item).attr("data-item"));console.log("node "+JSON.stringify(data_item));
+        if (data_item.nextNode) { //这是 生成连接线的
+           // connections.push(r.drawArr({ obj1: shapes[data_item.nodeId], obj2: shapes[data_item.nextNode] }));
+        }
+
+    }
+
+
+    $(function () {
+        //用来存储节点的顺序
+
+        $nodeList.each(function (index, item) {
+            _w = $(item).width(); //元素的宽
+            _h = $(item).height(); //元素的高
+            //alert(_h+"  ; "+$(item).html());
+            //console.log("bbbbbbbbb  index "+index);
+            //var r_y = (_h + 100) * index + 20;
+            var r_x=(_x + 100) * index + 20;
+            //节点json数据
+            var data_item = $.parseJSON($(item).attr("data-item"));
+            //shapes[data_item.nodeId] = r.rect(_x, r_y, _w, _h+20, 4);
+            // $(item).offset({ top: r_y + 1, left: _x + 1 });
+
+            shapes[data_item.nodeId] = r.rect(r_x, _y, _w, _h+2, 4);
+            $(item).offset({ top: _y + 100, left: r_x + 1 });
+
+            //为节点添加样式和事件，并且绘制节点之间的箭头
+            var color = Raphael.getColor();
+            shapes[data_item.nodeId].attr({ fill: color, stroke: color, "fill-opacity": 0, "stroke-width": 2, cursor: "move" });
+            shapes[data_item.nodeId].id = index + 1;
+            shapes[data_item.nodeId].drag(move, dragger, up); //拖动节点事件
+            shapes[data_item.nodeId].dblclick(function () {
+                var s=0;
+                alert(this.id+" ;  "+item.title) }
+                ); //绑定双击节点事件
+            shapes[data_item.nodeId].attr("title", item.title);
+            shapes[data_item.nodeId].contextmenu(function(event){
+               // alert(this.id+" ;  "+item.title);
+                showMenu(event);
+                 console.log("click contextmenu... "+this.id+";"+JSON.stringify(event));
+            });
+            shapes[data_item.nodeId].mouseover(function(event){
+                console.log("mouse over");
+                $(this).cursor="hand";
+            });
+
+            shapes[data_item.nodeId].mouseout(function(event){
+                console.log("mouse out");
+                $(this).cursor="hand";
+            });
+            // shapes[data_item.nodeId].mousedown(function(event){  //ok
+            //     // alert(this.id+" ;  "+item.title);
+            //     if(3 == event.which){
+            //         alert('这是右键单击事件');
+            //     }else if(1 == event.which){
+            //         alert('这是左键单击事件');
+            //     }
+            //     console.log("click ... "+this.id+";"+item);
+            // });
+
+            //item.innerHTML = data_item.nodeId + item.innerHTML;
+        });
+
+
+        //存储节点间的顺序
+        // $nodeList.each(function (i, item) {
+        //     //节点json数据
+        //     var data_item = $.parseJSON($(item).attr("data-item"));console.log("node "+JSON.stringify(data_item));
+        //     if (data_item.nextNode) { //这是 生成连接线的
+        //         connections.push(r.drawArr({ obj1: shapes[data_item.nodeId], obj2: shapes[data_item.nextNode] }));
+        //     }
+        // });
+
+
+
+    });
+    //随着节点位置的改变动态改变箭头
+    Raphael.fn.drawArr = function (obj) {
+        var point = getStartEnd(obj.obj1, obj.obj2);
+        var path1 = getArr(point.start.x, point.start.y, point.end.x, point.end.y, 8);
+        if (obj.arrPath) {
+            obj.arrPath.attr({ path: path1 });
+        } else {
+            obj.arrPath = this.path(path1);
+        }
+        return obj;
+    };
+
+    function getStartEnd(obj1, obj2) {
+        var bb1 = obj1.getBBox(),
+            bb2 = obj2.getBBox();
+        var p = [
+            { x: bb1.x + bb1.width / 2, y: bb1.y - 1 },
+            { x: bb1.x + bb1.width / 2, y: bb1.y + bb1.height + 1 },
+            { x: bb1.x - 1, y: bb1.y + bb1.height / 2 },
+            { x: bb1.x + bb1.width + 1, y: bb1.y + bb1.height / 2 },
+            { x: bb2.x + bb2.width / 2, y: bb2.y - 1 },
+            { x: bb2.x + bb2.width / 2, y: bb2.y + bb2.height + 1 },
+            { x: bb2.x - 1, y: bb2.y + bb2.height / 2 },
+            { x: bb2.x + bb2.width + 1, y: bb2.y + bb2.height / 2 }
+        ];
+        var d = {}, dis = [];
+        for (var i = 0; i < 4; i++) {
+            for (var j = 4; j < 8; j++) {
+                var dx = Math.abs(p[i].x - p[j].x),
+                    dy = Math.abs(p[i].y - p[j].y);
+                if (
+                    (i == j - 4) ||
+                    (((i != 3 && j != 6) || p[i].x < p[j].x) &&
+                        ((i != 2 && j != 7) || p[i].x > p[j].x) &&
+                        ((i != 0 && j != 5) || p[i].y > p[j].y) &&
+                        ((i != 1 && j != 4) || p[i].y < p[j].y))
+                ) {
+                    dis.push(dx + dy);
+                    d[dis[dis.length - 1]] = [i, j];
+                }
+            }
+        }
+        if (dis.length == 0) {
+            var res = [0, 4];
+        } else {
+            res = d[Math.min.apply(Math, dis)];
+        }
+        var result = {};
+        result.start = {};
+        result.end = {};
+        result.start.x = p[res[0]].x;
+        result.start.y = p[res[0]].y;
+        result.end.x = p[res[1]].x;
+        result.end.y = p[res[1]].y;
+        return result;
+    }
+
+
+    //获取组成箭头的三条线段的路径
+    function getArr(x1, y1, x2, y2, size) {
+        var angle = Raphael.angle(x1, y1, x2, y2); //得到两点之间的角度
+        var a45 = Raphael.rad(angle - 45); //角度转换成弧度
+        var a45m = Raphael.rad(angle + 45);
+        var x2a = x2 + Math.cos(a45) * size;
+        var y2a = y2 + Math.sin(a45) * size;
+        var x2b = x2 + Math.cos(a45m) * size;
+        var y2b = y2 + Math.sin(a45m) * size;
+        var result = ["M", x1, y1, "L", x2, y2, "L", x2a, y2a, "M", x2, y2, "L", x2b, y2b];
+        return result;
+    }
+
+    function save(){
+
+    }
+    function newflow(){
+        console.log('ccc');
+        creatdiv();
+    }
+    function load(){
+        $("#title3").html("仓库管理");
+        $("#context1").html("财务经理-张三</br>业务主管-李四");
+    }
+
+    function connect(){
+        var $nodeList = $(".item"); //节点集合jquery对象
+        $nodeList.each(function (i, item) {
+            //节点json数据
+            var data_item = $.parseJSON($(item).attr("data-item"));console.log("node "+JSON.stringify(data_item));
+            if (data_item.nextNode) { //这是 生成连接线的
+                connections.push(r.drawArr({ obj1: shapes[data_item.nodeId], obj2: shapes[data_item.nextNode] }));
+            }
+        });
+    }
+
+
+    function creatdiv(){
+        console.log("shapes len  "+shapes.length);
+        //创建一个div
+        var div = document.createElement('div');
+        div.innerHTML = '<div className="div" style="margin:0 auto;text-align:center; padding: 0px;height:20%;">新流程节点</div>'
+            +'<div className="div" style="background:black;height:80%; padding: 0px;margin:0px;background-color: yellow;">best </div>';
+
+        // div.oncontextmenu=function(ev) {
+        //    alert("okok"+ev);
+        // }
+        div.className = "item";
+        div.title="审批1";
+        div.setAttribute("id","item"+(shapes.length));
+       // if(divnum==0){
+           // div.data-item = '{"nodeId":'+divnum+',"nextNode":""}';
+            div.setAttribute('data-item','{"nodeId":"'+shapes.length+'","nextNode":""}');
+            console.log("last "+shapes.length);
+       $("#item"+(shapes.length-1)).attr('data-item','{"nodeId":"'+(shapes.length-1)+'","nextNode":"'+(shapes.length)+'"}');
+        //}else{
+           //var t=divnum+1;
+           // div.data-item = '{"nodeId":'+t+',"nextNode":'+divnum+'}';
+           // div.setAttribute('data-item',{"nodeId":'+t+',"nextNode":'+divnum+'});
+       // }
+
+        var bo = document.body; //获取body对象.
+        //动态插入到body中
+        bo.insertBefore(div, bo.lastChild);
+      //  var aa = $("#item6").attr("data-item");
+        //console.log("html  "+aa);
+
+       // var data_item = $("#item6").attr("data-item") ;
+       // console.log("passe  "+JSON.stringify(data_item));
+          initdiv($("#item"+shapes.length),shapes.length-1);
+       // initdiv("item"+(connections.length+2),connections.length+2);
+    }
+
+
+    function showMenu(e){ console.log("shubiao  "+e.pageX);
+        // 获取窗口尺寸
+        var winWidth = $(document).width();
+        var winHeight = $(document).height();
+        // 鼠标点击位置坐标
+        var mouseX = e.pageX;
+        var mouseY = e.pageY;
+        // ul标签的宽高
+        var menuWidth = $(".contextmenu").width();
+        var menuHeight = $(".contextmenu").height();
+        // 最小边缘margin(具体窗口边缘最小的距离)
+        var minEdgeMargin = 10;
+        // 以下判断用于检测ul标签出现的地方是否超出窗口范围
+        // 第一种情况：右下角超出窗口
+        if(mouseX + menuWidth + minEdgeMargin >= winWidth &&
+            mouseY + menuHeight + minEdgeMargin >= winHeight) {
+            menuLeft = mouseX - menuWidth - minEdgeMargin + "px";
+            menuTop = mouseY - menuHeight - minEdgeMargin + "px";
+        }
+        // 第二种情况：右边超出窗口
+        else if(mouseX + menuWidth + minEdgeMargin >= winWidth) {
+            menuLeft = mouseX - menuWidth - minEdgeMargin + "px";
+            menuTop = mouseY + minEdgeMargin + "px";
+        }
+        // 第三种情况：下边超出窗口
+        else if(mouseY + menuHeight + minEdgeMargin >= winHeight) {
+            menuLeft = mouseX + minEdgeMargin + "px";
+            menuTop = mouseY - menuHeight - minEdgeMargin + "px";
+        }
+        // 其他情况：未超出窗口
+        else {
+            menuLeft = mouseX + minEdgeMargin + "px";
+            menuTop = mouseY + minEdgeMargin + "px";
+        };
+        // ul菜单出现
+        $(".contextmenu").css({
+            "left": menuLeft,
+            "top": menuTop
+        }).show();
+        // 阻止浏览器默认的右键菜单事件
+        return false;
+
+    }
+
+
+    // 点击之后，右键菜单隐藏
+    $(document).click(function() {
+        $(".contextmenu").hide();
+    });
+
+</script>
+
+<input  id="bbb" type="button"   value="保存" onclick="save()"/>
+<input id="newflow" type="button"   value="新增" onclick="newflow();"/>
+<input type="button"  value="加载" onclick="load()"/>
+<input type="button"  value="连线" onclick="connect()"/>
+</body>
+</html>
